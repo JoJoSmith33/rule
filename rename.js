@@ -170,6 +170,18 @@ function operator(pro) {
   const BLKEYS = BLKEY ? BLKEY.split("+") : "";
 
   pro.forEach((e) => {
+    let tagValue = "";
+    let tagOriginal = "";
+    const tagMatch = e.name.match(/\[Tag:(.*?)\]/i);
+    if (tagMatch) {
+      tagOriginal = tagMatch[0];
+      tagValue = tagMatch[1];
+      e._subName = tagValue;
+      e._collectionName = tagValue;
+      e.group = tagValue;
+      e.name = e.name.replace(/\[Tag:.*?\]/ig, '').trim();
+    }
+
     let bktf = false, ens = e.name
     // 预处理 防止预判或遗漏
     Object.keys(rurekey).forEach((ikey) => {
@@ -277,10 +289,11 @@ function operator(pro) {
       keyover = keyover
         .concat(firstName, usflag, nNames, findKeyValue, retainKey, ikey, ikeys)
         .filter((k) => k !== "");
-      e.name = keyover.join(FGF);
+      e.name = tagOriginal + keyover.join(FGF);
     } else {
       if (nm) {
-        e.name = FNAME + FGF + e.name;
+        const prefix = [FNAME].filter(k => k !== "").join(FGF);
+        e.name = tagOriginal + (prefix ? (prefix + FGF + e.name) : e.name);
       } else {
         e.name = null;
       }
